@@ -1,0 +1,14 @@
+_quarantine/*
+!_quarantine/.gitkeep
+landing/*
+!landing/.gitkeep
+state/scan-receipts/*
+!state/scan-receipts/.gitkeep
+.secrets/
+.env
+.env.*
+node_modules/
+coverage/
+*.log
+scan-report*.json
+detonation-report*.json

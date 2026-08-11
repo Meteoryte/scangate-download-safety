@@ -1,0 +1,104 @@
+# SCANGATE Download Safety
+
+SCANGATE is a fail-closed intake pipeline for files, archives, repositories, prompt packs,
+plugins, skills, model assets, and other content that should not enter an agent's context
+before it has been checked.
+
+The core rule is simple: foreign bytes stream directly into quarantine. Deterministic
+checks and optional detonation run without sending file content to a model. An accountable
+decision is bound to the exact adopted bytes by a signed receipt. Later drift invalidates
+the evidence.
+
+NO_FINDINGS means no known-bad behavior was found. It never means safe.
+
+## What is included
+
+- Remote downloads stream directly into quarantine and can be checked against a
+  provider-declared byte count.
+- Archive names are validated before extraction, including traversal, device names,
+  Unicode deception, zip bombs, duplicate paths, encryption, and symlinks.
+- NVIDIA SkillSpector runs in a pinned, offline, read-only Docker container.
+- Local checks cover Unicode deception, entropy, hidden paths, inspection gaps, pickle
+  execution opcodes, safetensors bounds, and GGUF headers.
+- Executable content can be detonated in a disposable no-network container.
+- Trust uses exact ASCII identities. Unknown sources default to T3. Exact artifact
+  demotions override trusted wildcard containers without affecting siblings.
+- HMAC-signed receipts attest the real adopted file or directory.
+- A weekly sweep checks adopted-byte drift, blocked-payload reappearance, provenance
+  mutation, stale receipts, and landing-zone coverage.
+- A PreToolUse hook can deny model access to quarantine unless a valid ALLOW receipt
+  exists.
+
+## Requirements
+
+- Node.js 22 or newer
+- pnpm 11.12.0
+- Git and curl
+- Docker Engine or Docker Desktop for stages 1 and 2
+
+## Quick start
+
+Install and build the pinned scanner images:
+
+    corepack enable
+    pnpm install
+    pnpm run scan:build
+
+Intake a remote file. Pass the provider's exact size whenever it is available:
+
+    pnpm run scan:intake -- "https://files.example.test/artifact.zip" --name "artifact.zip" --size 123456
+
+The command returns a quarantine ID, directory, and tier. Run static scanning against the
+payload directory:
+
+    pnpm run scan:run -- "_quarantine/<id>/payload" T3
+
+If the payload contains executable content, detonate it:
+
+    pnpm run scan:detonate -- "_quarantine/<id>/payload"
+
+An operator then reviews only the structured evidence. For an ALLOW decision, land the
+byte-preserved artifact additively, then bind the receipt to that real destination:
+
+    pnpm run scan:dispose -- <id> --decision ALLOW --by <accountable-identity> --adopted-path "landing/artifact.zip"
+
+For unresolved or rejected content:
+
+    pnpm run scan:dispose -- <id> --decision DEFERRED --by <accountable-identity>
+    pnpm run scan:dispose -- <id> --decision REJECTED --by <accountable-identity> --purge
+
+Run the drift sweep on a schedule:
+
+    pnpm run scan:weekly
+
+Set SCANGATE_LANDING_ZONES to the platform-delimited list of directories you want included
+in coverage reporting. The default is landing.
+
+## Batch and Drive intake
+
+The repository intentionally does not embed a provider credential or a Drive folder ID.
+For an approval-gated batch, use the provider-neutral sequence in
+docs/PROVIDER-BATCH-RUNBOOK.md: list, diff, approve the exact file list, stream each file
+directly to quarantine, record pull-time commitment state, scan, dispose, update the
+manifest, reconcile, and verify any outbound report at the provider.
+
+## Security boundaries
+
+Read docs/THREAT-MODEL.md before deploying. The quarantine hook is an integration point,
+not a universal operating-system policy. Install it in every agent surface that can read
+workspace files, and keep the receipt key outside version control.
+
+The scanner pin is a trust anchor. Verify it with pnpm run scan:anchor and apply the
+N-1-scans-N review described in docs/PROTOCOL.md before changing it.
+
+## Tests
+
+    pnpm test
+
+The suite is dependency-free and exercises path containment, archive handling, intake,
+trust, scan parsing, detonation, receipts, hooks, and weekly drift behavior.
+
+## License
+
+MIT. SkillSpector is a separate NVIDIA project licensed under Apache-2.0 and is fetched at
+the exact commit recorded in docker/skillspector.pin.json.

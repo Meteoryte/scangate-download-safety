@@ -1,0 +1,16 @@
+{
+  "repo": "https://github.com/NVIDIA/SkillSpector.git",
+  "ref": "0562b964ec5ceac67ee15c163738e5404f14a908",
+  "resolved_from": "git ls-remote HEAD",
+  "pinned_at": "2026-08-05",
+  "pinned_by": "maintainer review",
+  "tier": "T0",
+  "license": "Apache-2.0",
+  "note": "SCANGATE trust anchor. This is the one place trust is granted rather than derived: a scanner cannot scan itself without infinite regress. Re-verify the pin on each version bump and have the incumbent image scan a candidate before promotion (N-1 scans N).",
+  "review_focus": [
+    "the source diff between pinned and candidate",
+    "changed dependencies, checked against OSV",
+    "any new network egress",
+    "any change that WEAKENS detection — a silently deleted YARA signature or relaxed pattern is the highest-value way to attack a scanner, because it leaves no trace in the scanner's own output"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "tier": "T1",
+      "host": "github.com",
+      "org": "NVIDIA",
+      "repo": "SkillSpector",
+      "basis": "scanner publisher identity; the scanner image itself is separately pinned by commit SHA"
+    },
+    {
+      "tier": "T1",
+      "host": "files.example.test",
+      "org": "approved-drop",
+      "repo": "*",
+      "basis": "non-routable example of an approval-gated first-party container"
+    }
+  ],
+  "demotions": [],
+  "denylist": [],
+  "default_policy": {
+    "unknown_tier": "T3",
+    "configured_is_trusted": false
+  }
+}
