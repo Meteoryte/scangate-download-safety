@@ -1,6 +1,6 @@
 # SCANGATE protocol
 
-Version 1.2.0
+Version 1.3.0
 
 ## Trigger
 
@@ -26,6 +26,22 @@ agent as soon as its content enters context, even if the file is never installed
 8. Record pull-time commitment state in the caller's durable system of record.
 
 No model may read the artifact.
+
+### Explicit user choice after containment
+
+`scan:user-choice` supports two low-token decisions without weakening Stage 0:
+
+- `--defer-scans yes` writes a signed DEFERRED receipt. No scan content enters model
+  context and the payload remains unreadable, unadoptable, and unexecutable.
+- `--defer-scans no --trusted-source yes` binds the user's attestation to the exact
+  payload tree hash and runs mandatory deterministic Stage 1 at T1. A score within the
+  threshold may be accepted for read/review only; every finding remains in the receipt.
+  BLOCKED remains blocked. Optional format, Defender, semantic, and detonation depth may
+  be skipped unless escalation is required.
+- `--defer-scans no --trusted-source no` returns to the full tier-resolved pipeline.
+
+Trusted fast track is not adoption, installation, release, deletion, or unrelated
+side-effect authority. It creates no global trusted-publisher wildcard.
 
 ### Stage 1: deterministic static scanning
 

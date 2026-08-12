@@ -75,6 +75,18 @@ test('a local directory is quarantined with metadata and a sentinel', () => {
   assert.ok(fs.existsSync(path.join(result.dir, 'payload', 'SKILL.md')));
 });
 
+test('a local non-archive file is preserved and copied inside payload', () => {
+  const srcDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sgfile-'));
+  const src = path.join(srcDir, 'pasted-text.txt');
+  fs.writeFileSync(src, 'user supplied request');
+  const root = tmpRoot();
+
+  const result = intake({ source: src, root, sourceName: 'request.txt' });
+  assert.equal(result.sourcePreserved, true);
+  assert.equal(fs.readFileSync(path.join(result.dir, '_source', 'request.txt'), 'utf8'), 'user supplied request');
+  assert.equal(fs.readFileSync(path.join(result.dir, 'payload', 'request.txt'), 'utf8'), 'user supplied request');
+});
+
 test('an archive is preserved in _source and extracted into payload', () => {
   const zip = buildZip('SKILL.md', '# from archive');
   const root = tmpRoot();

@@ -112,17 +112,22 @@ if (invokedDirectly) {
 
   const target = args[0];
   if (!target || target.startsWith('--')) {
-    console.error('usage: node scripts/scan-dispose.mjs <quarantine-id> --decision ALLOW|BLOCKED|REJECTED|DEFERRED --by <who> [--adopted-path <path>] [--purge]');
+    console.error('usage: node scripts/scan-dispose.mjs <quarantine-id> --decision ALLOW|BLOCKED|REJECTED|DEFERRED --by <who> [--adopted-path <path>] [--evidence-file <json>] [--purge]');
     process.exit(2);
   }
 
   try {
+    const evidenceFile = flag('evidence-file');
+    const evidence = evidenceFile
+      ? JSON.parse(fs.readFileSync(path.resolve(evidenceFile), 'utf8'))
+      : null;
     const result = dispose({
       id: path.basename(target.replace(/[/\\]+$/, '')),
       decision: (flag('decision') || '').toUpperCase(),
       by: flag('by'),
       purge: args.includes('--purge'),
       adoptedPath: flag('adopted-path'),
+      evidence,
     });
     console.log(JSON.stringify(result, null, 2));
   } catch (error) {
