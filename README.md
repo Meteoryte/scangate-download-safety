@@ -59,6 +59,18 @@ payload directory:
 
     pnpm run scan:run -- "_quarantine/<id>/payload" T3
 
+For an explicit low-token intake choice, answer with full `yes` or `no` tokens:
+
+    pnpm run scan:user-choice -- <url-or-path> --defer-scans yes --by human/chuck
+    pnpm run scan:user-choice -- <url-or-path> --defer-scans no --trusted-source yes --by human/chuck
+
+`defer-scans yes` writes a signed DEFERRED receipt and keeps the artifact unreadable.
+`trusted-source yes` binds the attestation to the exact payload tree, still runs mandatory
+deterministic Stage 1, retains all findings, and can ALLOW that exact payload for review
+only when it remains below the T1 threshold. It is not an adoption, install, release,
+deletion, or side-effect authorization. Use `trusted-source no` for the full tier-resolved
+pipeline.
+
 If the payload contains executable content, detonate it:
 
     pnpm run scan:detonate -- "_quarantine/<id>/payload"

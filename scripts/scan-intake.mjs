@@ -152,7 +152,15 @@ export function intake({
       }
       extractTo(preserved, payloadDir);
     } else {
-      fs.cpSync(source, payloadDir, { recursive: true });
+      const sourceStat = fs.statSync(source);
+      if (sourceStat.isDirectory()) {
+        fs.cpSync(source, sourceDir, { recursive: true });
+        fs.cpSync(source, payloadDir, { recursive: true });
+      } else {
+        const localName = safeSourceName(sourceName || path.basename(source));
+        fs.copyFileSync(source, path.join(sourceDir, localName));
+        fs.copyFileSync(source, path.join(payloadDir, localName));
+      }
     }
 
     // Post-extraction real-path check. A lexical check cannot catch a link created DURING
