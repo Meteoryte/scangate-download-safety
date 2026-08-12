@@ -21,9 +21,15 @@ NO_FINDINGS means no known-bad behavior was found. It never means safe.
 - Local checks cover Unicode deception, entropy, hidden paths, inspection gaps, pickle
   execution opcodes, safetensors bounds, and GGUF headers.
 - Executable content can be detonated in a disposable no-network container.
+- Format-native, model-blind review covers JSON, SVG, HTML, PDF, DOCX, APK, tar.gz,
+  and mixed source trees without printing extracted content.
+- An optional non-remediating Microsoft Defender pass can corroborate the exact source
+  tree on Windows.
 - Trust uses exact ASCII identities. Unknown sources default to T3. Exact artifact
   demotions override trusted wildcard containers without affecting siblings.
 - HMAC-signed receipts attest the real adopted file or directory.
+- A DEFERRED decision can be resolved additively: the original signed receipt remains
+  immutable and a new signed receipt supersedes it against the same quarantine evidence.
 - A weekly sweep checks adopted-byte drift, blocked-payload reappearance, provenance
   mutation, stale receipts, and landing-zone coverage.
 - A PreToolUse hook can deny model access to quarantine unless a valid ALLOW receipt
@@ -67,6 +73,25 @@ For unresolved or rejected content:
     pnpm run scan:dispose -- <id> --decision DEFERRED --by <accountable-identity>
     pnpm run scan:dispose -- <id> --decision REJECTED --by <accountable-identity> --purge
 
+To work through a DEFERRED artifact, run the format-native review against its payload:
+
+    pnpm run scan:formats -- "_quarantine/<id>/payload" --output format-review.json
+
+On Windows, an optional Defender corroboration can bind a second engine to the original
+source tree without allowing remediation:
+
+    pnpm run scan:defender -- "_quarantine/<id>/_source" --output defender-review.json
+
+If the format report lists governance candidates, reconcile every exact path/hash first
+using the decision schema in docs/DEFERRED-RESOLUTION.md. Then create an additive
+supersession receipt and land the byte-preserved source:
+
+    pnpm run scan:resolve -- <id> --by <accountable-identity> --landing-dir landing --format-report format-review.json --defender-report defender-review.json --governance-decision governance-decision.json --commitment-state MIRROR
+
+The Defender and governance flags are optional when not applicable. Format blockers are
+never waivable by this command. `REVIEW` warnings require the accountable `--by` decision
+and remain recorded in the signed receipt.
+
 Run the drift sweep on a schedule:
 
     pnpm run scan:weekly
@@ -96,7 +121,8 @@ N-1-scans-N review described in docs/PROTOCOL.md before changing it.
     pnpm test
 
 The suite is dependency-free and exercises path containment, archive handling, intake,
-trust, scan parsing, detonation, receipts, hooks, and weekly drift behavior.
+trust, scan parsing, detonation, format-native review, immutable receipt resolution,
+hooks, and weekly drift behavior.
 
 ## License
 

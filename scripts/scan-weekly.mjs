@@ -23,6 +23,15 @@ export function driftTargetFor(receipt) {
   return null;
 }
 
+// Resolution receipts supersede a prior DEFERRED decision but intentionally share its
+// immutable quarantine evidence. Provenance must remain anchored to the original entry.
+export function quarantineEntryIdFor(receipt, fallback) {
+  return receipt?.quarantine_entry_id
+    || receipt?.supersedes_receipt_id
+    || receipt?.receipt_id
+    || fallback;
+}
+
 // Did the purge hold? A blocked payload back on disk is somebody undoing a human BLOCK
 // decision, which is exactly the thing worth an alarm.
 export function checkPurgeHeld(receipt, entryDir) {
@@ -89,7 +98,7 @@ export function sweep({ quarantineRoot = QUARANTINE_ROOT } = {}) {
 
       if (!verifyReceipt(receipt).valid) { drift.push({ id: file, reason: 'signature invalid' }); continue; }
 
-      const entryDir = path.join(quarantineRoot, receipt.receipt_id || path.basename(file, '.json'));
+      const entryDir = path.join(quarantineRoot, quarantineEntryIdFor(receipt, path.basename(file, '.json')));
 
       // Adopted artifacts are drift-checked against what they became.
       if (driftTargetFor(receipt)) {

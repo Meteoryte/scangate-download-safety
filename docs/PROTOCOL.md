@@ -1,6 +1,6 @@
 # SCANGATE protocol
 
-Version 1.1.0
+Version 1.2.0
 
 ## Trigger
 
@@ -60,6 +60,24 @@ all deterministic stages return NO_FINDINGS and the approval record binds the co
 and exact artifact identity.
 
 Automatic demotion is allowed. Automatic promotion is not.
+
+#### Resolving DEFERRED without rewriting history
+
+A DEFERRED receipt is immutable. Later evidence does not edit it. Format-native review
+must bind the current payload tree and return zero blockers; any optional malware-engine
+corroboration must bind the preserved source tree and run without remediation. Review
+warnings may be accepted only by an accountable decision and remain in the new receipt.
+
+If an archive contains protocols, skills, rules, guidance, or contracts, every exact
+candidate path/hash must receive a closed reconciliation state before resolution. Newer
+or exact-installed authority closes as verified-no-fold; a genuine addition must be
+adopted through the caller's governance process; unresolved candidates keep the artifact
+DEFERRED.
+
+Resolution produces a new signed ALLOW receipt with `supersedes_receipt_id` and
+`quarantine_entry_id` pointing to the original entry. The old receipt and original source
+bytes remain intact. The weekly sweep verifies the landed bytes and follows that pointer
+back to the original provenance.
 
 ### Stage 5: additive landing and signed receipt
 

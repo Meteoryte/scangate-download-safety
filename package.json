@@ -1,6 +1,6 @@
 {
   "name": "scangate-download-safety",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A fail-closed quarantine, scanning, disposition, and drift-verification pipeline for untrusted downloads.",
   "type": "module",
   "private": false,
@@ -15,8 +15,11 @@
     "scan:run": "node scripts/scan-run.mjs",
     "scan:detonate": "node scripts/scan-detonate.mjs",
     "scan:dispose": "node scripts/scan-dispose.mjs",
+    "scan:formats": "node scripts/scan-format-review.mjs",
+    "scan:defender": "node scripts/scan-defender.mjs",
+    "scan:resolve": "node scripts/scan-resolve.mjs",
     "scan:weekly": "node scripts/scan-weekly.mjs",
     "scan:anchor": "node scripts/scan-anchor-verify.mjs",
-    "test": "node --test scripts/tests/scangate-core.test.mjs scripts/tests/scangate-trust.test.mjs scripts/tests/scangate-zip.test.mjs scripts/tests/scangate-checks.test.mjs scripts/tests/scangate-weights.test.mjs scripts/tests/scangate-run.test.mjs scripts/tests/scangate-detonate.test.mjs scripts/tests/scangate-docker.test.mjs scripts/tests/scangate-hook.test.mjs scripts/tests/scangate-intake.test.mjs scripts/tests/scangate-verdict.test.mjs scripts/tests/scangate-weekly.test.mjs scripts/tests/scangate-dispose.test.mjs"
+    "test": "node --test scripts/tests/scangate-core.test.mjs scripts/tests/scangate-trust.test.mjs scripts/tests/scangate-zip.test.mjs scripts/tests/scangate-checks.test.mjs scripts/tests/scangate-weights.test.mjs scripts/tests/scangate-run.test.mjs scripts/tests/scangate-detonate.test.mjs scripts/tests/scangate-docker.test.mjs scripts/tests/scangate-hook.test.mjs scripts/tests/scangate-intake.test.mjs scripts/tests/scangate-verdict.test.mjs scripts/tests/scangate-weekly.test.mjs scripts/tests/scangate-dispose.test.mjs scripts/tests/scangate-formats.test.mjs scripts/tests/scangate-resolve.test.mjs"
   }
 }

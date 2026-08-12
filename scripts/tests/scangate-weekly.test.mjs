@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { checkDrift, isStale, checkPurgeHeld, checkProvenance } from '../scan-weekly.mjs';
+import { checkDrift, isStale, checkPurgeHeld, checkProvenance, quarantineEntryIdFor } from '../scan-weekly.mjs';
 import { hashTree, sha256File, treeDigest } from '../scan-core.mjs';
 
 // Build a quarantine entry the way scan-intake/scan-dispose lay one out.
@@ -93,4 +93,12 @@ test('treeDigest is stable and order-independent', () => {
   const a = buildEntry({ purged: true, sourceFiles: { 'x.txt': '1', 'y.txt': '2' } });
   const b = buildEntry({ purged: true, sourceFiles: { 'y.txt': '2', 'x.txt': '1' } });
   assert.equal(treeDigest(path.join(a, '_source')), treeDigest(path.join(b, '_source')));
+});
+
+test('a resolution receipt keeps provenance anchored to its original quarantine entry', () => {
+  assert.equal(quarantineEntryIdFor({
+    receipt_id: 'new-resolution',
+    quarantine_entry_id: 'original-deferred',
+    supersedes_receipt_id: 'original-deferred',
+  }), 'original-deferred');
 });

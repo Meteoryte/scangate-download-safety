@@ -12,3 +12,7 @@ coverage/
 *.log
 scan-report*.json
 detonation-report*.json
+format-review*.json
+defender-review*.json
+governance-decision*.json
+resolution-report*.json

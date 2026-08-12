@@ -46,6 +46,11 @@ DEFERRED files in quarantine.
 
 Write a signed receipt over the actual landed path.
 
+For a later DEFERRED pass, do not overwrite that receipt. Run format-native review, bind
+optional malware-engine evidence to the original source tree, and reconcile every
+embedded governance candidate. `scan:resolve` then writes an additive signed
+supersession receipt. See DEFERRED-RESOLUTION.md.
+
 ## 7. Reconcile rather than overwrite
 
 Compare approved files to canonical and retained copies by hash before reading content.
